@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#262626"
+              android:gravity="top"
+              android:orientation="vertical"
+              android:padding="8dp"
+              android:minWidth="40dp"
+              android:backgroundTintMode="add">
+    <TextView
+            android:id="@+id/text_time"
+            android:text="12.12. klo 1-2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp" android:textColor="#E8E8E8"
+    />
+    <TextView
+            android:text="Sähkön hinta nyt:"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/textView"
+            android:textAppearance="@android:style/TextAppearance.Material.Small"
+            android:textColor="#E8E8E8"/>
+    <TextView
+            android:id="@+id/text_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="23.45"
+            android:textAppearance="@android:style/TextAppearance.Material.Large"
+            android:textAlignment="viewEnd" android:textAllCaps="false" android:gravity="bottom|right"
+            android:textColor="#E8E8E8" android:textSize="16sp"
+            android:textStyle="bold"/>
+    <TextView
+            android:text="snt/kWh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/textView2"
+            android:gravity="end" android:clickable="false" android:autoText="false"
+            android:width="45dip" android:textColor="#E8E8E8" android:textSize="10sp"
+            android:layout_marginBottom="1dip" android:layout_gravity="bottom" android:textAlignment="viewEnd"/>
+</LinearLayout>
