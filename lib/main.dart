@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:sahkohinta/pages/home_page.dart';
-import 'package:sahkohinta/preferences.dart';
-import 'package:sahkohinta/provider.dart';
+import 'package:sahkohinta/utils/preferences.dart';
+import 'package:sahkohinta/utils/provider.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
-import 'home_widget.dart';
+import 'package:sahkohinta/utils/home_widget.dart';
 
 
 void main() async {
@@ -33,11 +33,11 @@ class MyApp extends StatelessWidget {
       title: 'Sähköhinta',
       locale: const Locale('fi', ''), // Finnish, no country code
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey, brightness: Brightness.light),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.light),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey, brightness: Brightness.dark),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark),
         useMaterial3: true,
       ),
       themeMode: ThemeMode.system,

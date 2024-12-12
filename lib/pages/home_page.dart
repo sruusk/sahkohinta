@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sahkohinta/utils/api.dart';
 import 'package:sahkohinta/widgets/chart.dart';
 
 class HomePage extends StatelessWidget {
@@ -6,16 +7,147 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final PriceModifiers modifiers = PriceModifiers(multipliers: [ PriceModifier(type: ModifierType.vat, value: 1.255) ], addons: []);
     return Center(
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      child: Container(
+        constraints: const BoxConstraints(),
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            ChartWidget(),
-            const Text('Home Page', style: TextStyle(fontSize: 24)),
+            CurrentPrice(modifiers: modifiers),
             const SizedBox(height: 20),
-            const Text('Welcome to the Home Page', style: TextStyle(fontSize: 16)),
+            ChartWidget(),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                InfoBox(
+                    children: [
+                      const Text('Seuraava tunti', style: TextStyle(fontSize: 16)),
+                      FutureBuilder(
+                          future: ElectricityApi().getNextPrice(),
+                          builder: (context, snapshot) {
+                            if(snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            } else if(snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              return Text(snapshot.data!.toStringWithModifiers(modifiers), style: const TextStyle(fontSize: 20));
+                            }
+                          }
+                      ),
+                      const Text('sent/kWh', style: TextStyle(fontSize: 16)),
+                    ]
+                ),
+                InfoBox(
+                    children: [
+                      const Text('Keskihinta', style: TextStyle(fontSize: 16)),
+                      FutureBuilder(
+                          future: ElectricityApi().getPricesForDay(DateTime.now().toLocal()),
+                          builder: (context, snapshot) {
+                            if(snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            } else if(snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              double average = snapshot.data!.map((e) => e.price).reduce((a, b) => a + b) / snapshot.data!.length;
+                              return Text(average.toStringAsFixed(2), style: const TextStyle(fontSize: 20));
+                            }
+                          }
+                      ),
+                      const Text('sent/kWh', style: TextStyle(fontSize: 16)),
+                    ]
+                ),
+              ],
+            )
           ]
+        ),
+      )
+    );
+  }
+}
+
+class CurrentPrice extends StatelessWidget {
+  const CurrentPrice({
+    super.key,
+    required this.modifiers,
+  });
+
+  final PriceModifiers modifiers;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 10,
+          ),
+        ],
       ),
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Sähkön hinta nyt ', style: TextStyle(fontSize: 16)),
+          FutureBuilder(
+              future: ElectricityApi().getCurrentPrice(),
+              builder: (context, snapshot) {
+                if(snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if(snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return Text('${snapshot.data!.toStringWithModifiers(modifiers)} sent/kWh', style: const TextStyle(fontSize: 24));
+                }
+              }
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InfoBox extends StatelessWidget {
+  const InfoBox({
+    super.key,
+    required this.children,
+  });
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      height: 150,
+      width: 150,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.2),
+            spreadRadius: 0,
+            blurRadius: 6,
+          ),
+        ],
+        border: Border.all(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          width: 1,
+        ),
+      ),
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      )
     );
   }
 }

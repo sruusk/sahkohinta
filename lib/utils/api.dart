@@ -6,8 +6,9 @@ import 'package:xml/xml.dart';
 
 String getApiUrl() {
   DateTime now = DateTime.now();
+  DateTime startTime = now.add(const Duration(days: -1));
   DateTime tomorrow = now.add(const Duration(days: 2));
-  final String start = "${now.year}${now.month}${now.day}0000";
+  final String start = "${startTime.year}${startTime.month}${startTime.day}0000";
   final String end = "${tomorrow.year}${tomorrow.month}${tomorrow.day}2359";
   return "https://web-api.tp.entsoe.eu/api?documentType=A44&out_Domain=10YFI-1--------U&in_Domain=10YFI-1--------U&periodStart=$start&periodEnd=$end&securityToken=${dotenv.env['ENTSOE_TOKEN']}";
 }
@@ -28,14 +29,20 @@ class ElectricityApi {
     final String? pricesJson = prefs.getString('prices');
     if(pricesJson != null) {
       final prices = List<ElectricityPrice>.from(json.decode(pricesJson).map((e) => ElectricityPrice.fromJSON(e)));
-      // If time is over 16:00 and we don't have prices for the next day, fetch new prices
-      if(prices.isNotEmpty || DateTime.now().hour < 16) {
+      // Return cached prices if we have them. If it's after 16:00, return the cached prices if we already have the next day's prices
+      if(prices.isNotEmpty && DateTime.now().toLocal().hour < 16) {
         return prices;
-      } else if(DateTime.now().hour >= 16 && DateTime.now().day + 1 == prices.last.time.day) {
+      } else if(prices.isNotEmpty &&
+          DateTime.now().toLocal().hour >= 16 &&
+          DateTime.now().toLocal().day + 1 == prices.last.time.add(const Duration(hours: -2)).toLocal().day
+      ) {
         return prices;
       }
     }
 
+    print('Fetching prices');
+
+    if(!dotenv.isInitialized) await dotenv.load(fileName: ".env");
     final response = await http.get(Uri.parse(getApiUrl()));
     final List<ElectricityPrice> prices = [];
     final document = XmlDocument.parse(response.body);
@@ -49,11 +56,12 @@ class ElectricityApi {
       if(resolution != 'PT60M') throw Exception('Unsupported resolution $resolution');
 
       final points = period.childElements.where((element) => element.name.local == 'Point');
+      int position = 1;
       for (var point in points) {
-        final int position = int.parse(point.getElement('position')?.innerText ?? '0');
         final double price = double.parse(point.getElement('price.amount')?.innerText ?? '-100');
-        final DateTime time = DateTime.parse(start ?? '').add(Duration(hours: position - 1));
+        final DateTime time = DateTime.parse(start ?? '').add(Duration(hours: position));
         prices.add(ElectricityPrice.fromMWH(time, price));
+        position++;
       }
     }
     // Save prices as json to shared preferences
@@ -65,13 +73,29 @@ class ElectricityApi {
     final DateTime now = DateTime.now();
     final DateTime nowHour = DateTime(now.year, now.month, now.day, now.hour, 0, 0);
     var prices = await this.prices;
-    print('Got prices $prices');
     for (var price in prices) {
       if(price.time.isAtSameMomentAs(nowHour)) {
         return price;
       }
     }
     return null;
+  }
+
+  Future<ElectricityPrice?> getNextPrice() async {
+    final DateTime now = DateTime.now();
+    final DateTime nowHour = DateTime(now.year, now.month, now.day, now.hour, 0, 0).add(const Duration(hours: 1));
+    var prices = await this.prices;
+    for (var price in prices) {
+      if(price.time.isAtSameMomentAs(nowHour)) {
+        return price;
+      }
+    }
+    return null;
+  }
+
+  Future<List<ElectricityPrice>> getPricesForDay(DateTime day) async {
+    var prices = await this.prices;
+    return prices.where((element) => element.time.toLocal().day == day.toLocal().day).toList();
   }
 }
 
@@ -105,10 +129,13 @@ class ElectricityPrice {
     };
   }
 
-  String toStringWithMultipliers(List<double> multipliers) {
+  String toStringWithModifiers(PriceModifiers modifiers) {
     double result = price;
-    for(var m in multipliers) {
-      result *= m;
+    for (var modifier in modifiers.multipliers) {
+      result *= modifier.value;
+    }
+    for (var modifier in modifiers.addons) {
+      result += modifier.value;
     }
     return result.toStringAsFixed(2);
   }
@@ -122,4 +149,31 @@ class ElectricityPrice {
   String toString() {
     return 'ElectricityPrice{time: $time, price: ${price.toStringAsFixed(2)}}';
   }
+}
+
+class PriceModifiers {
+  // Multipliers to base price
+  final List<PriceModifier> multipliers;
+  // Addons added after multipliers are applied
+  List<PriceModifier> addons;
+
+  PriceModifiers({
+    required this.multipliers,
+    required this.addons
+  });
+}
+
+class PriceModifier {
+  final ModifierType type;
+  final double value;
+
+  PriceModifier({
+    required this.type,
+    required this.value
+  });
+}
+
+enum ModifierType {
+  vat,
+  margin
 }
