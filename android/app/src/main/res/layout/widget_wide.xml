@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#111c2e"
+              android:gravity="top"
+              android:orientation="vertical"
+              android:padding="8dp"
+              android:minWidth="40dp"
+              android:backgroundTintMode="add" android:dividerPadding="1dp">
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_gravity="bottom|end">
+
+        <TextView
+                android:text="Sähkön hinta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/textView"
+                android:textAppearance="@android:style/TextAppearance.Material.Small"
+                android:textColor="#E8E8E8" android:layout_gravity="bottom"/>
+        <TextView
+                android:id="@+id/text_time"
+                android:text="12.12. 17-18"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="12sp" android:textColor="#E8E8E8"
+                android:gravity="end" android:layout_gravity="bottom|end" android:layout_marginBottom="1dp"/>
+    </FrameLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="5dp">
+        <TextView
+                android:text="07-08"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" android:id="@+id/text_time1" android:textColor="#FFFFFF"
+                android:layout_weight="1" android:textSize="12sp" android:gravity="center"/>
+        <TextView
+                android:text="07-08"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" android:id="@+id/text_time2" android:textColor="#FFFFFF"
+                android:layout_weight="1" android:textSize="12sp" android:gravity="center"/>
+        <TextView
+                android:text="07-08"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" android:id="@+id/text_time3" android:textColor="#FFFFFF"
+                android:layout_weight="1" android:textSize="12sp" android:gravity="center"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+                android:id="@+id/text_price1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="23.45"
+                android:textAppearance="@android:style/TextAppearance.Material.Large"
+                android:textAllCaps="false"
+                android:gravity="center"
+                android:textColor="#E8E8E8"
+                android:textSize="16sp"
+                android:textStyle="bold" android:layout_weight="1"/>
+        <TextView
+                android:id="@+id/text_price2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="23.45"
+                android:textAppearance="@android:style/TextAppearance.Material.Large"
+                android:textAllCaps="false"
+                android:gravity="center"
+                android:textColor="#E8E8E8"
+                android:textSize="16sp"
+                android:textStyle="bold" android:layout_weight="1"/>
+        <TextView
+                android:id="@+id/text_price3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="23.45"
+                android:textAppearance="@android:style/TextAppearance.Material.Large"
+                android:textAllCaps="false"
+                android:gravity="center"
+                android:textColor="#E8E8E8"
+                android:textSize="16sp"
+                android:textStyle="bold" android:layout_weight="1"/>
+    </LinearLayout>
+    <TextView
+            android:text="snt/kWh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView2"
+            android:gravity="end"
+            android:clickable="false"
+            android:autoText="false"
+            android:width="45dip"
+            android:textColor="#E8E8E8"
+            android:textSize="10sp"
+            android:layout_gravity="bottom"
+            android:textStyle="bold"
+            android:textAlignment="viewEnd"/>
+</LinearLayout>

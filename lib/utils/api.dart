@@ -56,7 +56,7 @@ class ElectricityApi {
       if(resolution != 'PT60M') throw Exception('Unsupported resolution $resolution');
 
       final points = period.childElements.where((element) => element.name.local == 'Point');
-      int position = 1;
+      int position = 0;
       for (var point in points) {
         final double price = double.parse(point.getElement('price.amount')?.innerText ?? '-100');
         final DateTime time = DateTime.parse(start ?? '').add(Duration(hours: position));
@@ -75,6 +75,7 @@ class ElectricityApi {
     var prices = await this.prices;
     for (var price in prices) {
       if(price.time.isAtSameMomentAs(nowHour)) {
+        print('Current price: $price');
         return price;
       }
     }
@@ -83,19 +84,36 @@ class ElectricityApi {
 
   Future<ElectricityPrice?> getNextPrice() async {
     final DateTime now = DateTime.now();
-    final DateTime nowHour = DateTime(now.year, now.month, now.day, now.hour, 0, 0).add(const Duration(hours: 1));
+    final DateTime nextHour = DateTime(now.year, now.month, now.day, now.hour, 0, 0).add(const Duration(hours: 1));
     var prices = await this.prices;
     for (var price in prices) {
-      if(price.time.isAtSameMomentAs(nowHour)) {
+      if(price.time.isAtSameMomentAs(nextHour)) {
         return price;
       }
     }
     return null;
   }
 
+  Future<List<ElectricityPrice>> getThreeHourPrices() {
+    final DateTime now = DateTime.now();
+    final DateTime nowHour = DateTime(now.year, now.month, now.day, now.hour, 0, 0);
+    final DateTime nextThreeHours = nowHour.add(const Duration(hours: 2));
+    return getPricesForInterval(nowHour, nextThreeHours);
+  }
+
+  Future<List<ElectricityPrice>> getPricesForInterval(DateTime start, DateTime end) async {
+    var prices = await this.prices;
+    return prices.where(
+            (element) => (element.time.toLocal().isAfter(start) || element.time.toLocal().isAtSameMomentAs(start)) &&
+                (element.time.toLocal().isBefore(end) || element.time.toLocal().isAtSameMomentAs(end))
+    ).toList();
+  }
+
   Future<List<ElectricityPrice>> getPricesForDay(DateTime day) async {
     var prices = await this.prices;
-    return prices.where((element) => element.time.toLocal().day == day.toLocal().day).toList();
+    return prices.where(
+            (element) => element.time.toLocal().add(const Duration(hours: 1)).day == day.toLocal().day
+    ).toList();
   }
 }
 
@@ -143,6 +161,11 @@ class ElectricityPrice {
   String timeToString() {
     DateTime localTime = time.toLocal();
     return '${localTime.day}.${localTime.month}. ${localTime.hour.toString().padLeft(2, '0')}-${(localTime.hour + 1).toString().padLeft(2, '0')}';
+  }
+
+  String timeToHourString() {
+    DateTime localTime = time.toLocal();
+    return '${localTime.hour.toString().padLeft(2, '0')}-${(localTime.hour + 1).toString().padLeft(2, '0')}';
   }
 
   @override

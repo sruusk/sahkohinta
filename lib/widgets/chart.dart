@@ -45,7 +45,7 @@ class ChartWidget extends StatelessWidget {
                           ),
                         ),
                         y: ChartAxisSettingsAxis(
-                          frequency: 1.0,
+                          frequency: 10,
                           max: maxPrice,
                           min: minPrice,
                           textStyle: TextStyle(

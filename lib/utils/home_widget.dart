@@ -11,19 +11,23 @@ void updateWidget() {
   final int isolateId = Isolate.current.hashCode;
   print("[$now] Hello, world! isolate=${isolateId} function='$updateWidget'");
 
-  ElectricityApi().getCurrentPrice().then((price) {
-    print("Got price $price");
-    if(price != null) {
-      final PriceModifiers modifiers = PriceModifiers(multipliers: [ PriceModifier(type: ModifierType.vat, value: 1.255) ], addons: []);
-      List<Future> futures = [
-        HomeWidget.saveWidgetData("price", price.toStringWithModifiers(modifiers)),
-        HomeWidget.saveWidgetData("time", price.timeToString())
-      ];
-      Future.wait(futures).then((value) {
-        print("Saved widget data");
-        HomeWidget.updateWidget(name: 'WidgetProvider');
-      });
-    }
+  ElectricityApi().getThreeHourPrices().then((prices) async {
+    print("Got prices $prices");
+    final PriceModifiers modifiers = PriceModifiers(multipliers: [ PriceModifier(type: ModifierType.vat, value: 1.255) ], addons: []);
+    List<Future> futures = [
+      HomeWidget.saveWidgetData("price", prices[0].toStringWithModifiers(modifiers)),
+      HomeWidget.saveWidgetData("price0", prices[0].toStringWithModifiers(modifiers)),
+      HomeWidget.saveWidgetData("price1", prices[1].toStringWithModifiers(modifiers)),
+      HomeWidget.saveWidgetData("price2", prices[2].toStringWithModifiers(modifiers)),
+      HomeWidget.saveWidgetData("time", prices[0].timeToString()),
+      HomeWidget.saveWidgetData("time0", prices[0].timeToHourString()),
+      HomeWidget.saveWidgetData("time1", prices[1].timeToHourString()),
+      HomeWidget.saveWidgetData("time2", prices[2].timeToHourString())
+    ];
+    Future.wait(futures).then((value) {
+      print("Saved widget data");
+      HomeWidget.updateWidget(name: 'WidgetProvider');
+    });
   });
 }
 
