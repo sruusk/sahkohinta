@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:sahkohinta/utils/api.dart';
 
 class ChartWidget extends StatelessWidget {
-  ChartWidget({super.key});
+  ChartWidget({super.key, required PriceModifiers modifiers});
   final pricesFuture = ElectricityApi().getPricesForDay(DateTime.now());
+  final modifiersFuture = getModifiers();
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: pricesFuture,
+        future: Future.wait([pricesFuture, modifiersFuture]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -20,11 +21,21 @@ class ChartWidget extends StatelessWidget {
             return Center(
               child: Text('Error: ${snapshot.error}'),
             );
+          } else if(snapshot.data!.isEmpty) {
+            return const Center(
+              child: Text('Virhe ladatessa hintatietoja'),
+            );
           } else {
-            print("First: ${snapshot.data!.first}");
-            print("Last: ${snapshot.data!.last}");
-            double maxPrice = snapshot.data!.map((e) => e.price).reduce(max).ceilToDouble();
-            double minPrice = min(0, snapshot.data!.map((e) => e.price).reduce(min)).floorToDouble();
+            var prices = snapshot.data![0] as List<ElectricityPrice>;
+            var modifiers = snapshot.data![1] as PriceModifiers;
+            if(prices.length != 24) {
+              return const Center(
+                child: Text('Virhe ladatessa hintatietoja'),
+              );
+            }
+
+            double maxPrice = prices.map((e) => e.priceWithModifiers(modifiers)).reduce(max).ceilToDouble();
+            double minPrice = min(0, prices.map((e) => e.priceWithModifiers(modifiers)).reduce(min)).floorToDouble();
             return Center(
               child: Container(
                 constraints: const BoxConstraints(
@@ -45,7 +56,7 @@ class ChartWidget extends StatelessWidget {
                           ),
                         ),
                         y: ChartAxisSettingsAxis(
-                          frequency: 10,
+                          frequency: (maxPrice - minPrice) / 5,
                           max: maxPrice,
                           min: minPrice,
                           textStyle: TextStyle(
@@ -62,7 +73,7 @@ class ChartWidget extends StatelessWidget {
                         12,
                             (index) => ChartBarDataItem(
                           color: const Color(0xFF00A49F),
-                          value: snapshot.data![index + getInterval()[0].toInt()].price,
+                          value: prices[index + getInterval()[0].toInt()].priceWithModifiers(modifiers),
                           x: index.toDouble() + getInterval()[0],
                         ),
                       ),

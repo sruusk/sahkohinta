@@ -7,62 +7,71 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PriceModifiers modifiers = PriceModifiers(multipliers: [ PriceModifier(type: ModifierType.vat, value: 1.255) ], addons: []);
+    final Future<PriceModifiers> modifiersFuture = getModifiers();
     return Center(
       child: Container(
         constraints: const BoxConstraints(),
         color: Theme.of(context).colorScheme.surfaceContainer,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            CurrentPrice(modifiers: modifiers),
-            const SizedBox(height: 20),
-            ChartWidget(),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                InfoBox(
+        child: FutureBuilder(future: modifiersFuture, builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          } else if(snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            PriceModifiers modifiers = snapshot.data!;
+            return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CurrentPrice(modifiers: modifiers),
+                  const SizedBox(height: 20),
+                  ChartWidget(modifiers: modifiers),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const Text('Seuraava tunti', style: TextStyle(fontSize: 16)),
-                      FutureBuilder(
-                          future: ElectricityApi().getNextPrice(),
-                          builder: (context, snapshot) {
-                            if(snapshot.connectionState == ConnectionState.waiting) {
-                              return const CircularProgressIndicator();
-                            } else if(snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else {
-                              return Text(snapshot.data!.toStringWithModifiers(modifiers), style: const TextStyle(fontSize: 20));
-                            }
-                          }
+                      InfoBox(
+                        title: 'Seuraava tunti',
+                        children: [
+                          FutureBuilder(
+                              future: ElectricityApi().getNextPrice(),
+                              builder: (context, snapshot) {
+                                if(snapshot.connectionState == ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                } else if(snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else {
+                                  return Text(snapshot.data!.toStringWithModifiers(modifiers), style: const TextStyle(fontSize: 20));
+                                }
+                              }
+                          ),
+                          const Text('sent/kWh', style: TextStyle(fontSize: 16)),
+                        ]
                       ),
-                      const Text('sent/kWh', style: TextStyle(fontSize: 16)),
-                    ]
-                ),
-                InfoBox(
-                    children: [
-                      const Text('Keskihinta', style: TextStyle(fontSize: 16)),
-                      FutureBuilder(
-                          future: ElectricityApi().getPricesForDay(DateTime.now().toLocal()),
-                          builder: (context, snapshot) {
-                            if(snapshot.connectionState == ConnectionState.waiting) {
-                              return const CircularProgressIndicator();
-                            } else if(snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else {
-                              double average = snapshot.data!.map((e) => e.price).reduce((a, b) => a + b) / snapshot.data!.length;
-                              return Text(average.toStringAsFixed(2), style: const TextStyle(fontSize: 20));
-                            }
-                          }
+                      InfoBox(
+                        title: 'Vuorokauden keskihinta',
+                        children: [
+                          FutureBuilder(
+                              future: ElectricityApi().getPricesForDay(DateTime.now().toLocal()),
+                              builder: (context, snapshot) {
+                                if(snapshot.connectionState == ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                } else if(snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else {
+                                  double average = snapshot.data!.map((e) => e.price).reduce((a, b) => a + b) / snapshot.data!.length;
+                                  return Text(average.toStringAsFixed(2), style: const TextStyle(fontSize: 20));
+                                }
+                              }
+                          ),
+                          const Text('sent/kWh', style: TextStyle(fontSize: 16)),
+                        ]
                       ),
-                      const Text('sent/kWh', style: TextStyle(fontSize: 16)),
-                    ]
-                ),
-              ],
-            )
-          ]
-        ),
+                    ],
+                  )
+                ]
+            );
+          }
+        }),
       )
     );
   }
@@ -116,9 +125,11 @@ class CurrentPrice extends StatelessWidget {
 class InfoBox extends StatelessWidget {
   const InfoBox({
     super.key,
+    required this.title,
     required this.children,
   });
 
+  final String title;
   final List<Widget> children;
 
   @override
@@ -144,9 +155,21 @@ class InfoBox extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(10),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
+        children: [
+          Text(title, style: const TextStyle(fontSize: 16)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: children,
+              )
+            ],
+          )
+        ],
       )
     );
   }

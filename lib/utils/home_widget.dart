@@ -13,7 +13,7 @@ void updateWidget() {
 
   ElectricityApi().getThreeHourPrices().then((prices) async {
     print("Got prices $prices");
-    final PriceModifiers modifiers = PriceModifiers(multipliers: [ PriceModifier(type: ModifierType.vat, value: 1.255) ], addons: []);
+    final PriceModifiers modifiers = await getModifiers();
     List<Future> futures = [
       HomeWidget.saveWidgetData("price", prices[0].toStringWithModifiers(modifiers)),
       HomeWidget.saveWidgetData("price0", prices[0].toStringWithModifiers(modifiers)),

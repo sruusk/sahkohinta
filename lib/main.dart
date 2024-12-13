@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:sahkohinta/pages/home_page.dart';
+import 'package:sahkohinta/pages/settings_page.dart';
 import 'package:sahkohinta/utils/preferences.dart';
 import 'package:sahkohinta/utils/provider.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
@@ -96,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 case 0:
                   return const HomePage();
                 case 1:
-                  return const Text('Settings');
+                  return const SettingsPage();
                 default:
                   return const Text('Error');
               }

@@ -109,10 +109,9 @@ class ElectricityApi {
   }
 
   Future<List<ElectricityPrice>> getPricesForDay(DateTime day) async {
-    var prices = await this.prices;
-    return prices.where(
-            (element) => element.time.toLocal().add(const Duration(hours: 1)).day == day.toLocal().day
-    ).toList();
+    final DateTime start = DateTime(day.year, day.month, day.day, 0, 0, 0);
+    final DateTime end = DateTime(day.year, day.month, day.day, 23, 0, 0);
+    return getPricesForInterval(start, end);
   }
 }
 
@@ -157,6 +156,17 @@ class ElectricityPrice {
     return result.toStringAsFixed(2);
   }
 
+  double priceWithModifiers(PriceModifiers modifiers) {
+    double result = price;
+    for (var modifier in modifiers.multipliers) {
+      result *= modifier.value;
+    }
+    for (var modifier in modifiers.addons) {
+      result += modifier.value;
+    }
+    return result;
+  }
+
   String timeToString() {
     DateTime localTime = time.toLocal();
     return '${localTime.day}.${localTime.month}. ${localTime.hour.toString().padLeft(2, '0')}-${(localTime.hour + 1).toString().padLeft(2, '0')}';
@@ -198,4 +208,19 @@ class PriceModifier {
 enum ModifierType {
   vat,
   margin
+}
+
+Future<PriceModifiers> getModifiers() async {
+  final prefs = await SharedPreferences.getInstance();
+  final vat = double.parse(prefs.getString('vat') ?? '25.5');
+  final margin = double.parse(prefs.getString('margin') ?? '0');
+  print('VAT: $vat, margin: $margin');
+  return PriceModifiers(
+    multipliers: [
+      PriceModifier(type: ModifierType.vat, value: vat / 100 + 1),
+    ],
+    addons: [
+      PriceModifier(type: ModifierType.margin, value: margin),
+    ]
+  );
 }
