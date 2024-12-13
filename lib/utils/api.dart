@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart';
@@ -10,7 +9,8 @@ String getApiUrl() {
   DateTime tomorrow = now.add(const Duration(days: 2));
   final String start = "${startTime.year}${startTime.month}${startTime.day}0000";
   final String end = "${tomorrow.year}${tomorrow.month}${tomorrow.day}2359";
-  return "https://web-api.tp.entsoe.eu/api?documentType=A44&out_Domain=10YFI-1--------U&in_Domain=10YFI-1--------U&periodStart=$start&periodEnd=$end&securityToken=${dotenv.env['ENTSOE_TOKEN']}";
+  const String token = String.fromEnvironment('ENTSOE_TOKEN');
+  return "https://web-api.tp.entsoe.eu/api?documentType=A44&out_Domain=10YFI-1--------U&in_Domain=10YFI-1--------U&periodStart=$start&periodEnd=$end&securityToken=$token";
 }
 
 class ElectricityApi {
@@ -42,7 +42,6 @@ class ElectricityApi {
 
     print('Fetching prices');
 
-    if(!dotenv.isInitialized) await dotenv.load(fileName: ".env");
     final response = await http.get(Uri.parse(getApiUrl()));
     final List<ElectricityPrice> prices = [];
     final document = XmlDocument.parse(response.body);

@@ -26,6 +26,17 @@ class WidgetProvider : HomeWidgetProvider() {
                 setTextViewText(R.id.text_time, time)
             }
 
+            val mediumView = RemoteViews(context.packageName, R.layout.widget_medium).apply {
+                val prices = Array<String>(3) { i -> widgetData.getString("price$i", "0.00").toString() }
+                val time = widgetData.getString("time", "12.12.").toString()
+                val times = Array<String>(3) { i -> widgetData.getString("time$i", "25-26").toString() }
+                setTextViewText(R.id.text_price1, prices[0])
+                setTextViewText(R.id.text_price2, prices[1])
+                setTextViewText(R.id.text_time, time.split(" ")[0]) // Only date
+                setTextViewText(R.id.text_time1, times[0])
+                setTextViewText(R.id.text_time2, times[1])
+            }
+
             val wideView = RemoteViews(context.packageName, R.layout.widget_wide).apply {
                 val prices = Array<String>(3) { i -> widgetData.getString("price$i", "0.00").toString() }
                 val time = widgetData.getString("time", "12.12.").toString()
@@ -41,7 +52,8 @@ class WidgetProvider : HomeWidgetProvider() {
 
             val viewMapping: Map<SizeF, RemoteViews> = mapOf(
                 SizeF(40f, 100f) to narrowView,
-                SizeF(100f, 100f) to wideView
+                SizeF(120f, 100f) to mediumView,
+                SizeF(180f, 100f) to wideView
             )
 
             val remoteViews = RemoteViews(viewMapping)

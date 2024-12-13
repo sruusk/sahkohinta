@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:sahkohinta/pages/home_page.dart';
 import 'package:sahkohinta/utils/preferences.dart';
@@ -10,7 +9,6 @@ import 'package:sahkohinta/utils/home_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure the binding is initialized
-  await dotenv.load(fileName: ".env");
   await AndroidAlarmManager.initialize();
   await AndroidAlarmManager.oneShot(const Duration(seconds: 5), 1, updateWidget);
   HomeWidget.updateWidget(name: 'WidgetProvider');

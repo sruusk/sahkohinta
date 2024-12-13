@@ -42,11 +42,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" android:id="@+id/text_time2" android:textColor="#FFFFFF"
                 android:layout_weight="1" android:textSize="12sp" android:gravity="center"/>
-        <TextView
-                android:text="07-08"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" android:id="@+id/text_time3" android:textColor="#FFFFFF"
-                android:layout_weight="1" android:textSize="12sp" android:gravity="center"/>
     </LinearLayout>
     <LinearLayout
             android:orientation="horizontal"
@@ -65,17 +60,6 @@
                 android:textStyle="bold" android:layout_weight="1"/>
         <TextView
                 android:id="@+id/text_price2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="23.45"
-                android:textAppearance="@android:style/TextAppearance.Material.Large"
-                android:textAllCaps="false"
-                android:gravity="center"
-                android:textColor="#E8E8E8"
-                android:textSize="16sp"
-                android:textStyle="bold" android:layout_weight="1"/>
-        <TextView
-                android:id="@+id/text_price3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="23.45"

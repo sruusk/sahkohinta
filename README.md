@@ -11,6 +11,7 @@ Sähkön tuntihinnat Suomessa.
 - [ ] Laske hintaan ALV ja myyjän marginaali
 
 ## Ympäristömuuttujat
+Voit asettaa ympäristömuuttujat ajaessa flutter run/build komentoja käyttämällä `--dart-define key=value` parametria.
 - `ENTSOE_TOKEN` - ENTSO-E Web API Security Token
 
 ## Kuvakaappaus
