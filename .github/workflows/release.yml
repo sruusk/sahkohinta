@@ -31,7 +31,7 @@ jobs:
       - name: Set Up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.27.0'
           channel: 'stable'
           cache: true
 
@@ -43,7 +43,9 @@ jobs:
       # Building APK
       - name: Build APK
         run: |
-          flutter build apk --release --no-shrink
+          flutter build apk --release --no-shrink --dart-define=ENTSOE_TOKEN=${{ secrets.ENTSOE_TOKEN }}
+        env:
+          ENTSOE_TOKEN: ${{ secrets.ENTSOE_TOKEN }}
 
       # Upload Artifacts
       - name: Upload Artifacts
