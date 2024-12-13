@@ -99,11 +99,14 @@ class SettingsNumberField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController controller = TextEditingController(text: value.toString());
+
     return SizedBox(
       width: 100,
       child: TextField(
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         onChanged: (value) => onChanged(double.tryParse(value) ?? 0),
+        controller: controller,
         decoration: InputDecoration(
           border: OutlineInputBorder(
               borderSide: BorderSide.none,
