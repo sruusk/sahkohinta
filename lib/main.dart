@@ -87,6 +87,16 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth < 600) {
+        return _buildMobileLayout(context);
+      } else {
+        return _buildTabletLayout(context);
+      }
+    });
+  }
+
+  Widget _buildMobileLayout(BuildContext context) {
     return Scaffold(
       body: SafeArea(
           child: PageView.builder(
@@ -118,6 +128,46 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         selectedItemColor: Theme.of(context).colorScheme.secondary,
+      ),
+    );
+  }
+
+  Widget _buildTabletLayout(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        children: [
+          NavigationRail(
+            selectedIndex: _pageIndex,
+            onDestinationSelected: setPageIndex,
+            labelType: NavigationRailLabelType.selected,
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.home),
+                label: Text('Koti'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.settings),
+                label: Text('Asetukset'),
+              ),
+            ],
+          ),
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: 2,
+              itemBuilder: (context, index) {
+                switch (index) {
+                  case 0:
+                    return const HomePage();
+                  case 1:
+                    return const SettingsPage();
+                  default:
+                    return const Text('Error');
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

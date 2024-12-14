@@ -38,6 +38,7 @@ class SettingsPage extends StatelessWidget {
                   child: SettingsNumberField(
                     value: double.parse(preferencesNotifier.value.preferences['margin'] ?? '0'),
                     onChanged: (value) {
+                      if(value < 0) return;
                       preferencesNotifier.setPreference('margin', value.toString());
                       updateWidget();
                     },

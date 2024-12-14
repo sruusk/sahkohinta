@@ -40,9 +40,11 @@ class ChartWidget extends StatelessWidget {
               child: Container(
                 constraints: const BoxConstraints(
                   maxHeight: 300.0,
+                  maxWidth: 600
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
                 child: Chart(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   layers: [
                     ChartAxisLayer(
                       settings: ChartAxisSettings(
@@ -52,7 +54,7 @@ class ChartWidget extends StatelessWidget {
                           min: getInterval()[0],
                           textStyle: TextStyle(
                             color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-                            fontSize: 10.0,
+                            fontSize: 14.0,
                           ),
                         ),
                         y: ChartAxisSettingsAxis(
@@ -61,7 +63,7 @@ class ChartWidget extends StatelessWidget {
                           min: minPrice,
                           textStyle: TextStyle(
                             color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-                            fontSize: 10.0,
+                            fontSize: 14.0,
                           ),
                         ),
                       ),
@@ -78,8 +80,7 @@ class ChartWidget extends StatelessWidget {
                         ),
                       ),
                       settings: const ChartBarSettings(
-                        thickness: 8.0,
-                        radius: BorderRadius.all(Radius.circular(4.0)),
+                        thickness: 14.0,
                       ),
                     ),
                   ],

@@ -19,57 +19,39 @@ class HomePage extends StatelessWidget {
             return Text('Error: ${snapshot.error}');
           } else {
             PriceModifiers modifiers = snapshot.data!;
-            return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  CurrentPrice(modifiers: modifiers),
-                  const SizedBox(height: 20),
-                  ChartWidget(modifiers: modifiers),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      InfoBox(
-                        title: 'Seuraava tunti',
-                        children: [
-                          FutureBuilder(
-                              future: ElectricityApi().getNextPrice(),
-                              builder: (context, snapshot) {
-                                if(snapshot.connectionState == ConnectionState.waiting) {
-                                  return const CircularProgressIndicator();
-                                } else if(snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  return Text(snapshot.data!.toStringWithModifiers(modifiers), style: const TextStyle(fontSize: 20));
-                                }
-                              }
-                          ),
-                          const Text('sent/kWh', style: TextStyle(fontSize: 16)),
-                        ]
-                      ),
-                      InfoBox(
-                        title: 'Vuorokauden keskihinta',
-                        children: [
-                          FutureBuilder(
-                              future: ElectricityApi().getPricesForDay(DateTime.now().toLocal()),
-                              builder: (context, snapshot) {
-                                if(snapshot.connectionState == ConnectionState.waiting) {
-                                  return const CircularProgressIndicator();
-                                } else if(snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  double average = snapshot.data!.map((e) => e.price).reduce((a, b) => a + b) / snapshot.data!.length;
-                                  return Text(average.toStringAsFixed(2), style: const TextStyle(fontSize: 20));
-                                }
-                              }
-                          ),
-                          const Text('sent/kWh', style: TextStyle(fontSize: 16)),
-                        ]
-                      ),
-                    ],
-                  )
-                ]
-            );
+            return LayoutBuilder(builder: (context, constraints) {
+              if(constraints.maxWidth > 600) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ChartWidget(modifiers: modifiers),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CurrentHourPrice(modifiers: modifiers),
+                        NextHourPrice(modifiers: modifiers),
+                      ],
+                    )
+                  ]
+                );
+              } else {
+                return ListView(
+                  children: [
+                    CurrentPriceBanner(modifiers: modifiers),
+                    const SizedBox(height: 20),
+                    ChartWidget(modifiers: modifiers),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        NextHourPrice(modifiers: modifiers),
+                        const DailyAverage(),
+                      ],
+                    )
+                  ]
+                );
+              }
+            });
           }
         }),
       )
@@ -77,8 +59,99 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class CurrentPrice extends StatelessWidget {
-  const CurrentPrice({
+class CurrentHourPrice extends StatelessWidget {
+  const CurrentHourPrice({
+    super.key,
+    required this.modifiers,
+  });
+
+  final PriceModifiers modifiers;
+
+  @override
+  Widget build(BuildContext context) {
+    return InfoBox(
+        title: 'Hinta nyt',
+        children: [
+          FutureBuilder(
+              future: ElectricityApi().getCurrentPrice(),
+              builder: (context, snapshot) {
+                if(snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if(snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return Text(snapshot.data!.toStringWithModifiers(modifiers), style: const TextStyle(fontSize: 20));
+                }
+              }
+          ),
+          const Text('sent/kWh', style: TextStyle(fontSize: 16)),
+        ]
+    );
+  }
+}
+
+class NextHourPrice extends StatelessWidget {
+  const NextHourPrice({
+    super.key,
+    required this.modifiers,
+  });
+
+  final PriceModifiers modifiers;
+
+  @override
+  Widget build(BuildContext context) {
+    return InfoBox(
+      title: 'Seuraava tunti',
+      children: [
+        FutureBuilder(
+            future: ElectricityApi().getNextPrice(),
+            builder: (context, snapshot) {
+              if(snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if(snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return Text(snapshot.data!.toStringWithModifiers(modifiers), style: const TextStyle(fontSize: 20));
+              }
+            }
+        ),
+        const Text('sent/kWh', style: TextStyle(fontSize: 16)),
+      ]
+    );
+  }
+}
+
+class DailyAverage extends StatelessWidget {
+  const DailyAverage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InfoBox(
+      title: 'Vuorokauden keskihinta',
+      children: [
+        FutureBuilder(
+            future: ElectricityApi().getPricesForDay(DateTime.now().toLocal()),
+            builder: (context, snapshot) {
+              if(snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if(snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                double average = snapshot.data!.map((e) => e.price).reduce((a, b) => a + b) / snapshot.data!.length;
+                return Text(average.toStringAsFixed(2), style: const TextStyle(fontSize: 20));
+              }
+            }
+        ),
+        const Text('sent/kWh', style: TextStyle(fontSize: 16)),
+      ]
+    );
+  }
+}
+
+class CurrentPriceBanner extends StatelessWidget {
+  const CurrentPriceBanner({
     super.key,
     required this.modifiers,
   });
@@ -135,7 +208,7 @@ class InfoBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(20),
+      margin: const EdgeInsets.all(10),
       height: 150,
       width: 150,
       decoration: BoxDecoration(
