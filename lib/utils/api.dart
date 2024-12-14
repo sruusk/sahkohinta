@@ -108,9 +108,18 @@ class ElectricityApi {
     ).toList();
   }
 
+  /// Get prices for the current day
   Future<List<ElectricityPrice>> getPricesForDay(DateTime day) async {
     final DateTime start = DateTime(day.year, day.month, day.day, 0, 0, 0);
     final DateTime end = DateTime(day.year, day.month, day.day, 23, 0, 0);
+    return getPricesForInterval(start, end);
+  }
+
+  /// Get prices for current + n days.
+  Future<List<ElectricityPrice>> getPricesForDays(int days) async {
+    final DateTime now = DateTime.now();
+    final DateTime start = DateTime(now.year, now.month, now.day, 0, 0, 0);
+    final DateTime end = DateTime(now.year, now.month, now.day + days, 23, 0, 0);
     return getPricesForInterval(start, end);
   }
 }
