@@ -3,10 +3,12 @@ package com.sruusk.sahkohinta
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Build
 import android.util.SizeF
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
+import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
 class WidgetProvider : HomeWidgetProvider() {
@@ -24,6 +26,9 @@ class WidgetProvider : HomeWidgetProvider() {
                 val time = widgetData.getString("time", "12.12. 25-26")
                 setTextViewText(R.id.text_price, price)
                 setTextViewText(R.id.text_time, time)
+
+                val pendingIntent = HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java)
+                setOnClickPendingIntent(R.id.widget_layout, pendingIntent)
             }
 
             val mediumView = RemoteViews(context.packageName, R.layout.widget_medium).apply {
@@ -35,6 +40,9 @@ class WidgetProvider : HomeWidgetProvider() {
                 setTextViewText(R.id.text_time, time.split(" ")[0]) // Only date
                 setTextViewText(R.id.text_time1, times[0])
                 setTextViewText(R.id.text_time2, times[1])
+
+                val pendingIntent = HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java)
+                setOnClickPendingIntent(R.id.widget_layout, pendingIntent)
             }
 
             val wideView = RemoteViews(context.packageName, R.layout.widget_wide).apply {
@@ -48,6 +56,9 @@ class WidgetProvider : HomeWidgetProvider() {
                 setTextViewText(R.id.text_time1, times[0])
                 setTextViewText(R.id.text_time2, times[1])
                 setTextViewText(R.id.text_time3, times[2])
+
+                val pendingIntent = HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java)
+                setOnClickPendingIntent(R.id.widget_layout, pendingIntent)
             }
 
             val viewMapping: Map<SizeF, RemoteViews> = mapOf(

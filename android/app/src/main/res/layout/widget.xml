@@ -9,6 +9,7 @@
               android:orientation="vertical"
               android:padding="8dp"
               android:minWidth="40dp"
+              android:id="@+id/widget_layout"
               android:backgroundTintMode="add">
     <TextView
             android:id="@+id/text_time"
