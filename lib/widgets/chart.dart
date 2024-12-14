@@ -68,9 +68,9 @@ class _ChartWidget extends State<ChartWidget> {
             children: [
               const SizedBox(width: 16.0),
               Text(
-                  '${prices![interval[0].toInt()].time.toLocal().month}. ${prices![interval[0].toInt()].time.toLocal().day}. '
-                      'klo ${prices![interval[0].toInt()].time.toLocal().hour} '
-                      '- ${prices![interval[1].toInt()].time.toLocal().hour + 1} välillä',
+                  '${prices![interval[0].toInt()].time.toLocal().day}.${prices![interval[0].toInt()].time.toLocal().month}. '
+                      'klo ${prices![interval[0].toInt()].time.toLocal().hour.toString().padLeft(2, '0')}'
+                      '-${prices![interval[1].toInt()].time.toLocal().hour + 1}',
                   style: Theme.of(context).textTheme.headlineSmall
               ),
             ],
@@ -158,6 +158,7 @@ class _ChartWidget extends State<ChartWidget> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Wrap(
               alignment: WrapAlignment.center,
+              spacing: 10.0,
               children: [
                 ElevatedButton(
                   onPressed: _previousInterval,
