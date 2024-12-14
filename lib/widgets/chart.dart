@@ -74,7 +74,7 @@ class ChartWidget extends StatelessWidget {
                       items: List.generate(
                         12,
                             (index) => ChartBarDataItem(
-                          color: const Color(0xFF00A49F),
+                          color: Theme.of(context).colorScheme.primary,
                           value: prices[index + getInterval()[0].toInt()].priceWithModifiers(modifiers),
                           x: index.toDouble() + getInterval()[0],
                         ),
@@ -82,6 +82,23 @@ class ChartWidget extends StatelessWidget {
                       settings: const ChartBarSettings(
                         thickness: 14.0,
                       ),
+                    ),
+                    ChartTooltipLayer(
+                      shape: () => ChartTooltipBarShape<ChartBarDataItem>(
+                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0,
+                          vertical: 8.0,
+                        ),
+                        radius: 8.0,
+                        currentPos: (item) => item.currentValuePos,
+                        currentSize: (item) => item.currentValueSize,
+                        onTextValue: (item) => '${item.value.toStringAsFixed(2)} sent/kWh',
+                        textStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
                     ),
                   ],
                 )
