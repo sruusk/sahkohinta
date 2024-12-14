@@ -131,7 +131,7 @@ class _ChartWidget extends State<ChartWidget> {
                     ),
                   ),
                   settings: const ChartBarSettings(
-                    thickness: 14.0,
+                    thickness: 18.0,
                   ),
                 ),
                 ChartTooltipLayer(

@@ -44,7 +44,7 @@ class HomePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         NextHourPrice(modifiers: modifiers),
-                        const DailyAverage(),
+                        DailyAverage(modifiers: modifiers),
                       ],
                     )
                   ]
@@ -123,7 +123,10 @@ class NextHourPrice extends StatelessWidget {
 class DailyAverage extends StatelessWidget {
   const DailyAverage({
     super.key,
+    required this.modifiers,
   });
+
+  final PriceModifiers modifiers;
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +142,10 @@ class DailyAverage extends StatelessWidget {
                 return Text('Error: ${snapshot.error}');
               } else {
                 double average = snapshot.data!.map((e) => e.price).reduce((a, b) => a + b) / snapshot.data!.length;
-                return Text(average.toStringAsFixed(2), style: const TextStyle(fontSize: 20));
+                return Text(
+                    ElectricityPrice(time: DateTime.now(), price: average).toStringWithModifiers(modifiers),
+                    style: const TextStyle(fontSize: 20)
+                );
               }
             }
         ),
@@ -208,7 +214,7 @@ class InfoBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(10),
-      height: 150,
+      height: 130,
       width: 150,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerLow,
