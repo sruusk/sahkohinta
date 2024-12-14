@@ -11,7 +11,6 @@ class HomePage extends StatelessWidget {
     return Center(
       child: Container(
         constraints: const BoxConstraints(),
-        color: Theme.of(context).colorScheme.surfaceContainer,
         child: FutureBuilder(future: modifiersFuture, builder: (context, snapshot) {
           if(snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
@@ -20,7 +19,7 @@ class HomePage extends StatelessWidget {
           } else {
             PriceModifiers modifiers = snapshot.data!;
             return LayoutBuilder(builder: (context, constraints) {
-              if(constraints.maxWidth > 600) {
+              if(constraints.maxWidth > 700) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -216,9 +215,10 @@ class InfoBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.shadow.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.3),
             spreadRadius: 0,
-            blurRadius: 6,
+            blurRadius: 0.5,
+            offset: const Offset(0, 2),
           ),
         ],
         border: Border.all(

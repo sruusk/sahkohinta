@@ -53,15 +53,17 @@ class _ChartWidget extends State<ChartWidget> {
 
   @override
   Widget build(BuildContext context) {
-      if(errorMessage != null) return Center(child: Text('Error: $errorMessage'));
-     if(prices == null) return const Center(child: CircularProgressIndicator());
+    if(errorMessage != null) return Center(child: Text('Error: $errorMessage'));
+    if(prices == null) return const Center(child: CircularProgressIndicator());
 
     double maxPrice = prices!.map((e) => e.priceWithModifiers(modifiers)).reduce(max).ceilToDouble();
     double minPrice = min(0, prices!.map((e) => e.priceWithModifiers(modifiers)).reduce(min)).floorToDouble();
+    double screenHeight = MediaQuery.of(context).size.height;
 
     return Center(
       child: Column(
         children: [
+          const SizedBox(height: 8.0),
           Row(
             children: [
               const SizedBox(width: 16.0),
@@ -74,16 +76,24 @@ class _ChartWidget extends State<ChartWidget> {
             ],
           ),
           Container(
-            constraints: const BoxConstraints(
-              maxHeight: 300.0,
+            constraints: BoxConstraints(
+              maxHeight: min(300.0, screenHeight - 140),
               maxWidth: 600
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16.0),
               color: Theme.of(context).colorScheme.surfaceContainerLow,
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).colorScheme.shadow.withOpacity(0.3),
+                  spreadRadius: 0,
+                  blurRadius: 0.5,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            margin: const EdgeInsets.all(16.0),
-            padding: const EdgeInsets.all(16.0),
+            margin: const EdgeInsets.symmetric(horizontal: 16.0 , vertical: 8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Chart(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
               layers: [
@@ -144,31 +154,35 @@ class _ChartWidget extends State<ChartWidget> {
               ],
             )
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: _previousInterval,
-                child: Row(
-                  children: [
-                    const Icon(Icons.arrow_back),
-                    const SizedBox(width: 8.0),
-                    Text('Edelliset 12 tuntia', style: Theme.of(context).textTheme.bodyMedium),
-                  ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _previousInterval,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.arrow_back),
+                      const SizedBox(width: 8.0),
+                      Text('Edelliset 12 tuntia', style: Theme.of(context).textTheme.bodyMedium),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16.0),
-              ElevatedButton(
-                onPressed: _nextInterval,
-                child: Row(
-                  children: [
-                    Text('Seuraavat 12 tuntia', style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(width: 8.0),
-                    const Icon(Icons.arrow_forward),
-                  ],
+                ElevatedButton(
+                  onPressed: _nextInterval,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('Seuraavat 12 tuntia', style: Theme.of(context).textTheme.bodyMedium),
+                      const SizedBox(width: 8.0),
+                      const Icon(Icons.arrow_forward),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            )
           )
         ],
       )
