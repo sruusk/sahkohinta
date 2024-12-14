@@ -100,13 +100,22 @@ class SettingsNumberField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController controller = TextEditingController(text: value.toString());
+    final FocusNode focusNode = FocusNode();
+
+    focusNode.addListener(() {
+      if (!focusNode.hasFocus) {
+        onChanged(double.tryParse(controller.text) ?? 0);
+      }
+    });
 
     return SizedBox(
       width: 100,
       child: TextField(
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        onChanged: (value) => onChanged(double.tryParse(value) ?? 0),
+        keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: false),
+        onSubmitted: (value) => onChanged(double.tryParse(value) ?? 0),
+        onTapOutside: (value) => focusNode.unfocus(),
         controller: controller,
+        focusNode: focusNode,
         decoration: InputDecoration(
           border: OutlineInputBorder(
               borderSide: BorderSide.none,
