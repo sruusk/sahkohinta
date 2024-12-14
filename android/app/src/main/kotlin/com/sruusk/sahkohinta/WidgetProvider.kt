@@ -3,7 +3,6 @@ package com.sruusk.sahkohinta
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Build
 import android.util.SizeF
 import android.widget.RemoteViews

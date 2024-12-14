@@ -134,40 +134,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildTabletLayout(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: [
-          NavigationRail(
-            selectedIndex: _pageIndex,
-            onDestinationSelected: setPageIndex,
-            labelType: NavigationRailLabelType.selected,
-            destinations: const <NavigationRailDestination>[
-              NavigationRailDestination(
-                icon: Icon(Icons.home),
-                label: Text('Koti'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.settings),
-                label: Text('Asetukset'),
-              ),
-            ],
-          ),
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: 2,
-              itemBuilder: (context, index) {
-                switch (index) {
-                  case 0:
-                    return const HomePage();
-                  case 1:
-                    return const SettingsPage();
-                  default:
-                    return const Text('Error');
-                }
-              },
+      body: SafeArea(
+        child: Row(
+          children: [
+            NavigationRail(
+              selectedIndex: _pageIndex,
+              onDestinationSelected: setPageIndex,
+              labelType: NavigationRailLabelType.selected,
+              destinations: const <NavigationRailDestination>[
+                NavigationRailDestination(
+                  icon: Icon(Icons.home),
+                  label: Text('Koti'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.settings),
+                  label: Text('Asetukset'),
+                ),
+              ],
             ),
-          ),
-        ],
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  switch (index) {
+                    case 0:
+                      return const HomePage();
+                    case 1:
+                      return const SettingsPage();
+                    default:
+                      return const Text('Error');
+                  }
+                },
+              ),
+            ),
+          ],
+        )
       ),
     );
   }
