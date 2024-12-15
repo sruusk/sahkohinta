@@ -40,17 +40,20 @@ class _ChartWidget extends State<ChartWidget> {
 
   _nextInterval() {
     setState(() {
-      if(prices == null || prices!.length < interval[1].toInt() + 12) return;
+      if(!isNextInterval) return;
       interval = [interval[0] + 12, interval[1] + 12];
     });
   }
 
   _previousInterval() {
-    if(interval[0] < 12) return;
+    if(!isPreviousInterval) return;
     setState(() {
       interval = [interval[0] - 12, interval[1] - 12];
     });
   }
+
+  bool get isNextInterval => prices != null && prices!.length >= interval[1].toInt() + 12;
+  bool get isPreviousInterval => interval[0] >= 12;
 
   @override
   Widget build(BuildContext context) {
