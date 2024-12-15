@@ -26,9 +26,10 @@ class _ChartWidget extends State<ChartWidget> {
     super.initState();
     modifiers = widget.modifiers;
     interval = getInterval();
-    ElectricityApi().getPricesForDay(DateTime.now()).then((value) {
+    ElectricityApi().getPricesForDays(1).then((value) {
       setState(() {
         prices = value;
+        interval = [getInterval()[0] + 24, getInterval()[1] + 24];
       });
     }).catchError((error) {
       setState(() {
@@ -118,7 +119,7 @@ class _ChartWidget extends State<ChartWidget> {
                       ),
                     ),
                   ),
-                  labelX: (value) => value.toInt().toString(),
+                  labelX: (value) => (value.toInt() % 24).toString(),
                   labelY: (value) => value.toInt().toString(),
                 ),
                 ChartBarLayer(
