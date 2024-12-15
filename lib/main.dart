@@ -105,9 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
             itemBuilder: (context, index) {
               switch (index) {
                 case 0:
-                  return const HomePage();
+                  return const HomePage(title: 'Sähköhinta');
                 case 1:
-                  return const SettingsPage();
+                  return const SettingsPage(title: 'Asetukset');
                 default:
                   return const Text('Error');
               }

@@ -5,7 +5,7 @@ import 'package:xml/xml.dart';
 
 String getApiUrl() {
   DateTime now = DateTime.now();
-  DateTime startTime = now.add(const Duration(days: -1));
+  DateTime startTime = now.add(const Duration(days: -3));
   DateTime tomorrow = now.add(const Duration(days: 2));
   final String start = "${startTime.year}${startTime.month}${startTime.day}0000";
   final String end = "${tomorrow.year}${tomorrow.month}${tomorrow.day}2359";
@@ -30,7 +30,7 @@ class ElectricityApi {
     if(pricesJson != null) {
       final prices = List<ElectricityPrice>.from(json.decode(pricesJson).map((e) => ElectricityPrice.fromJSON(e)));
       // Return cached prices if we have them. If it's after 16:00, return the cached prices if we already have the next day's prices
-      if(prices.isNotEmpty && DateTime.now().toLocal().hour < 16) {
+      if(prices.isNotEmpty && DateTime.now().toLocal().hour < 16 && prices.last.time.toLocal().add(const Duration(hours: -1)).day == DateTime.now().toLocal().day) {
         return prices;
       } else if(prices.isNotEmpty &&
           DateTime.now().toLocal().hour >= 16 &&
@@ -115,11 +115,11 @@ class ElectricityApi {
     return getPricesForInterval(start, end);
   }
 
-  /// Get prices for current + n days.
+  /// Get prices for current - n days.
   Future<List<ElectricityPrice>> getPricesForDays(int days) async {
     final DateTime now = DateTime.now();
-    final DateTime start = DateTime(now.year, now.month, now.day, 0, 0, 0);
-    final DateTime end = DateTime(now.year, now.month, now.day + days, 23, 0, 0);
+    final DateTime start = DateTime(now.year, now.month, now.day - days, 0, 0, 0);
+    final DateTime end = DateTime(now.year, now.month, now.day, 23, 0, 0);
     return getPricesForInterval(start, end);
   }
 }

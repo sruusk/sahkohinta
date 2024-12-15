@@ -3,57 +3,64 @@ import 'package:sahkohinta/utils/api.dart';
 import 'package:sahkohinta/widgets/chart.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, this.title});
+
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
     final Future<PriceModifiers> modifiersFuture = getModifiers();
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(),
-        child: FutureBuilder(future: modifiersFuture, builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          } else if(snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            PriceModifiers modifiers = snapshot.data!;
-            return LayoutBuilder(builder: (context, constraints) {
-              if(constraints.maxWidth > 700) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ChartWidget(modifiers: modifiers),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CurrentHourPrice(modifiers: modifiers),
-                        NextHourPrice(modifiers: modifiers),
-                      ],
-                    )
-                  ]
-                );
-              } else {
-                return ListView(
-                  children: [
-                    CurrentPriceBanner(modifiers: modifiers),
-                    const SizedBox(height: 20),
-                    ChartWidget(modifiers: modifiers),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        NextHourPrice(modifiers: modifiers),
-                        DailyAverage(modifiers: modifiers),
-                      ],
-                    )
-                  ]
-                );
-              }
-            });
-          }
-        }),
-      )
+    return Scaffold(
+      appBar: title != null ? AppBar(
+        title: Text(title!),
+      ) : null,
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(),
+          child: FutureBuilder(future: modifiersFuture, builder: (context, snapshot) {
+            if(snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else if(snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              PriceModifiers modifiers = snapshot.data!;
+              return LayoutBuilder(builder: (context, constraints) {
+                if(constraints.maxWidth > 700) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ChartWidget(modifiers: modifiers),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CurrentHourPrice(modifiers: modifiers),
+                          NextHourPrice(modifiers: modifiers),
+                        ],
+                      )
+                    ]
+                  );
+                } else {
+                  return ListView(
+                    children: [
+                      // CurrentPriceBanner(modifiers: modifiers),
+                      // const SizedBox(height: 20),
+                      ChartWidget(modifiers: modifiers),
+                      const SizedBox(height: 20),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        children: [
+                          CurrentHourPrice(modifiers: modifiers),
+                          NextHourPrice(modifiers: modifiers),
+                        ],
+                      )
+                    ]
+                  );
+                }
+              });
+            }
+          }),
+        )
+      ),
     );
   }
 }
@@ -107,7 +114,7 @@ class NextHourPrice extends StatelessWidget {
             builder: (context, snapshot) {
               if(snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
-              } else if(snapshot.hasError) {
+              } else if(snapshot.hasError || snapshot.data == null) {
                 return Text('Error: ${snapshot.error}');
               } else {
                 return Text(snapshot.data!.toStringWithModifiers(modifiers), style: const TextStyle(fontSize: 20));
@@ -187,7 +194,7 @@ class CurrentPriceBanner extends StatelessWidget {
               builder: (context, snapshot) {
                 if(snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
-                } else if(snapshot.hasError) {
+                } else if(snapshot.hasError || snapshot.data == null) {
                   return Text('Error: ${snapshot.error}');
                 } else {
                   return Text('${snapshot.data!.toStringWithModifiers(modifiers)} sent/kWh', style: const TextStyle(fontSize: 24));

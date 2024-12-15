@@ -4,52 +4,59 @@ import 'package:sahkohinta/utils/preferences.dart';
 import '../utils/provider.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+  const SettingsPage({super.key, this.title});
+
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
     final preferencesNotifier = Provider.of<PreferencesNotifier>(context);
     //preferencesNotifier.value.preferences['vat'],
 
-    return ListView(
-      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-      children: [
-        Card(
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Hinta", style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: 20),
-                SettingsItem(
-                  title: "Sisällytä ALV hintoihin",
-                  child: SettingsSwitch(
-                    value: double.parse(preferencesNotifier.value.preferences['vat'] ?? '25.5') != 0,
-                    onChanged: (value) {
-                      preferencesNotifier.setPreference('vat', value ? '25.5' : '0');
-                      updateWidget();
-                    },
-                  ),
+    return Scaffold(
+      appBar: title != null ? AppBar(
+        title: Text(title!),
+      ) : null,
+      body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+        children: [
+          Card(
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Hinta", style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: 20),
+                    SettingsItem(
+                      title: "Sisällytä ALV hintoihin",
+                      child: SettingsSwitch(
+                        value: double.parse(preferencesNotifier.value.preferences['vat'] ?? '25.5') != 0,
+                        onChanged: (value) {
+                          preferencesNotifier.setPreference('vat', value ? '25.5' : '0');
+                          updateWidget();
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SettingsItem(
+                      title: "Myyjän marginaali",
+                      child: SettingsNumberField(
+                        value: double.parse(preferencesNotifier.value.preferences['margin'] ?? '0'),
+                        onChanged: (value) {
+                          if(value < 0) return;
+                          preferencesNotifier.setPreference('margin', value.toString());
+                          updateWidget();
+                        },
+                        helperText: "sent/kWh",
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                SettingsItem(
-                  title: "Myyjän marginaali",
-                  child: SettingsNumberField(
-                    value: double.parse(preferencesNotifier.value.preferences['margin'] ?? '0'),
-                    onChanged: (value) {
-                      if(value < 0) return;
-                      preferencesNotifier.setPreference('margin', value.toString());
-                      updateWidget();
-                    },
-                    helperText: "sent/kWh",
-                  ),
-                ),
-              ],
-            ),
+              )
           )
-        )
-      ],
+        ],
+      ),
     );
   }
 }
