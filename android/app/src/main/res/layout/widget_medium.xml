@@ -4,13 +4,15 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="#111c2e"
+              android:background="#1C1F22"
               android:gravity="top"
               android:orientation="vertical"
               android:padding="8dp"
               android:minWidth="40dp"
               android:id="@+id/widget_layout"
-              android:backgroundTintMode="add" android:dividerPadding="1dp">
+              android:backgroundTintMode="add" android:dividerPadding="1dp" android:showDividers="beginning"
+              android:outlineProvider="none"
+>
     <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:layout_gravity="bottom|end">
@@ -81,9 +83,9 @@
     <TextView
             android:text="snt/kWh"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/textView2"
-            android:gravity="end"
+            android:gravity="bottom|end"
             android:clickable="false"
             android:autoText="false"
             android:width="45dip"

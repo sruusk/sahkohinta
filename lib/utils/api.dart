@@ -214,15 +214,19 @@ class PriceModifier {
   });
 }
 
-enum ModifierType {
+enum ModifierType { // This is unnecessary for now
   vat,
-  margin
+  margin,
+  tax,
+  transfer
 }
 
 Future<PriceModifiers> getModifiers() async {
   final prefs = await SharedPreferences.getInstance();
   final vat = double.parse(prefs.getString('vat') ?? '25.5');
   final margin = double.parse(prefs.getString('margin') ?? '0');
+  final electricityTax = double.parse(prefs.getString('tax') ?? '0');
+  final transfer = double.parse(prefs.getString('transfer') ?? '0');
   print('VAT: $vat, margin: $margin');
   return PriceModifiers(
     multipliers: [
@@ -230,6 +234,8 @@ Future<PriceModifiers> getModifiers() async {
     ],
     addons: [
       PriceModifier(type: ModifierType.margin, value: margin),
+      PriceModifier(type: ModifierType.tax, value: electricityTax),
+      PriceModifier(type: ModifierType.transfer, value: transfer)
     ]
   );
 }

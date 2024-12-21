@@ -4,7 +4,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="#111c2e"
+              android:background="#1C1F22"
               android:gravity="top"
               android:orientation="vertical"
               android:padding="8dp"
@@ -19,7 +19,7 @@
             android:textSize="12sp" android:textColor="#E8E8E8"
     />
     <TextView
-            android:text="Sähkön hinta nyt:"
+            android:text="Sähkön hinta:"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:id="@+id/textView"
             android:textAppearance="@android:style/TextAppearance.Material.Small"

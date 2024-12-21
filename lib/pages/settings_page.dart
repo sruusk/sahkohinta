@@ -40,12 +40,36 @@ class SettingsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     SettingsItem(
+                      title: "Sisällytä sähkövero hintoihin",
+                      child: SettingsSwitch(
+                        value: double.parse(preferencesNotifier.value.preferences['tax'] ?? '0') != 0,
+                        onChanged: (value) {
+                          preferencesNotifier.setPreference('tax', value ? '2.82752' : '0');
+                          updateWidget();
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SettingsItem(
                       title: "Myyjän marginaali",
                       child: SettingsNumberField(
                         value: double.parse(preferencesNotifier.value.preferences['margin'] ?? '0'),
                         onChanged: (value) {
                           if(value < 0) return;
                           preferencesNotifier.setPreference('margin', value.toString());
+                          updateWidget();
+                        },
+                        helperText: "sent/kWh",
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SettingsItem(
+                      title: "Sähkön siirtohinta",
+                      child: SettingsNumberField(
+                        value: double.parse(preferencesNotifier.value.preferences['transfer'] ?? '0'),
+                        onChanged: (value) {
+                          if(value < 0) return;
+                          preferencesNotifier.setPreference('transfer', value.toString());
                           updateWidget();
                         },
                         helperText: "sent/kWh",
