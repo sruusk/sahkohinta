@@ -55,12 +55,25 @@ class ElectricityApi {
       if(resolution != 'PT60M') throw Exception('Unsupported resolution $resolution');
 
       final points = period.childElements.where((element) => element.name.local == 'Point');
-      int position = 0;
+      int position = 1;
+      ElectricityPrice? prevPrice;
       for (var point in points) {
         final double price = double.parse(point.getElement('price.amount')?.innerText ?? '-100');
-        final DateTime time = DateTime.parse(start ?? '').add(Duration(hours: position));
-        prices.add(ElectricityPrice.fromMWH(time, price));
-        position++;
+        final int pos = int.parse(point.getElement('position')?.innerText ?? '-1');
+        final DateTime time = DateTime.parse(start ?? '').add(Duration(hours: pos - 1));
+        if(pos == position) {
+          prevPrice = ElectricityPrice.fromMWH(time, price);
+          prices.add(prevPrice);
+        } else if(pos > position) {
+          final double oldPrice = prevPrice!.price;
+          final DateTime oldTime = prevPrice.time;
+          for(int i = 1; i < pos - position + 1; i++) {
+            prices.add(ElectricityPrice(time: oldTime.add(Duration(hours: i)), price: oldPrice));
+          }
+          prevPrice = ElectricityPrice.fromMWH(time, price);
+          prices.add(prevPrice);
+        }
+        position = pos + 1;
       }
     }
     // Save prices as json to shared preferences
