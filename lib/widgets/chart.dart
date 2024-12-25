@@ -60,9 +60,13 @@ class _ChartWidget extends State<ChartWidget> {
     if(errorMessage != null) return Center(child: Text('Error: $errorMessage'));
     if(prices == null) return const Center(child: CircularProgressIndicator());
 
-    double maxPrice = prices!.map((e) => e.priceWithModifiers(modifiers)).reduce(max).ceilToDouble();
-    double minPrice = min(0, prices!.map((e) => e.priceWithModifiers(modifiers)).reduce(min)).floorToDouble();
+    double maxPrice = prices!.sublist(interval[0].toInt(), interval[1].toInt() + 1).map((e) => e.priceWithModifiers(modifiers)).reduce(max).ceilToDouble();
+    double minPrice = min(0, prices!.sublist(interval[0].toInt(), interval[1].toInt() + 1).map((e) => e.priceWithModifiers(modifiers)).reduce(min)).floorToDouble();
     double screenHeight = MediaQuery.of(context).size.height;
+
+    if(maxPrice - minPrice < 5) {
+      maxPrice = minPrice + 5;
+    }
 
     return Center(
       child: Column(
@@ -89,7 +93,7 @@ class _ChartWidget extends State<ChartWidget> {
               color: Theme.of(context).colorScheme.surfaceContainerLow,
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.shadow.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.3),
                   spreadRadius: 0,
                   blurRadius: 0.5,
                   offset: const Offset(0, 2),

@@ -132,7 +132,7 @@ class ElectricityApi {
   Future<List<ElectricityPrice>> getPricesForDays(int days) async {
     final DateTime now = DateTime.now();
     final DateTime start = DateTime(now.year, now.month, now.day - days, 0, 0, 0);
-    final DateTime end = DateTime(now.year, now.month, now.day, 23, 0, 0);
+    final DateTime end = DateTime(now.year, now.month, now.day + 1, 23, 0, 0);
     return getPricesForInterval(start, end);
   }
 }
