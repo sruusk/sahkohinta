@@ -83,7 +83,7 @@ class CurrentHourPrice extends StatelessWidget {
               builder: (context, snapshot) {
                 if(snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
-                } else if(snapshot.hasError) {
+                } else if(snapshot.hasError || snapshot.data == null) {
                   return Text('Error: ${snapshot.error}');
                 } else {
                   return Text(snapshot.data!.toStringWithModifiers(modifiers), style: const TextStyle(fontSize: 20));
@@ -248,11 +248,13 @@ class InfoBox extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: children,
-              )
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: children,
+                ),
+              ),
             ],
           )
         ],

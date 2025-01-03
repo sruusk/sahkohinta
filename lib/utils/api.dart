@@ -7,8 +7,8 @@ String getApiUrl() {
   DateTime now = DateTime.now();
   DateTime startTime = now.add(const Duration(days: -3));
   DateTime tomorrow = now.add(const Duration(days: 2));
-  final String start = "${startTime.year}${startTime.month}${startTime.day}0000";
-  final String end = "${tomorrow.year}${tomorrow.month}${tomorrow.day}2359";
+  final String start = "${startTime.year}${startTime.month.toString().padLeft(2, '0')}${startTime.day.toString().padLeft(2, '0')}0000";
+  final String end = "${tomorrow.year}${tomorrow.month.toString().padLeft(2, '0')}${tomorrow.day.toString().padLeft(2, '0')}2359";
   const String token = String.fromEnvironment('ENTSOE_TOKEN');
   return "https://web-api.tp.entsoe.eu/api?documentType=A44&out_Domain=10YFI-1--------U&in_Domain=10YFI-1--------U&periodStart=$start&periodEnd=$end&securityToken=$token";
 }

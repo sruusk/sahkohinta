@@ -58,7 +58,7 @@ class _ChartWidget extends State<ChartWidget> {
   @override
   Widget build(BuildContext context) {
     if(errorMessage != null) return Center(child: Text('Error: $errorMessage'));
-    if(prices == null) return const Center(child: CircularProgressIndicator());
+    if(prices == null || prices!.isEmpty) return const Center(child: CircularProgressIndicator());
 
     double maxPrice = prices!.sublist(interval[0].toInt(), interval[1].toInt() + 1).map((e) => e.priceWithModifiers(modifiers)).reduce(max).ceilToDouble();
     double minPrice = min(0, prices!.sublist(interval[0].toInt(), interval[1].toInt() + 1).map((e) => e.priceWithModifiers(modifiers)).reduce(min)).floorToDouble();
